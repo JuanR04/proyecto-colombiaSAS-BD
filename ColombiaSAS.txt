@@ -1,0 +1,314 @@
+--- Crear tabla Tipo_plan
+CREATE TABLE Tipo_plan (
+    id_tipoplan SERIAL PRIMARY KEY,
+    nombre_plan VARCHAR(50) NOT NULL
+);
+
+-- Crear tabla planes
+CREATE TABLE planes (
+    id_plan SERIAL PRIMARY KEY,
+    id_tipoplan INT NOT NULL,
+    nombre_plan VARCHAR(100),
+    minutos INT,
+    gigas INT,
+    mensajes INT,
+    precio_plan_postpago DECIMAL(10, 2),
+	precio_plan_prepago DECIMAL(10,2),
+    valor_min_adicional DECIMAL(10, 2),
+    descripcion TEXT,
+    FOREIGN KEY (id_tipoplan) REFERENCES Tipo_plan (id_tipoplan)
+);
+create table consumiblesxcontrato(
+	id_consumibles serial primary key,
+	nombre_plan VARCHAR(100),
+    minutos INT,
+    gigas INT,
+    mensajes INT,
+    precio_plan_postpago DECIMAL(10, 2),
+	precio_plan_prepago DECIMAL(10,2),
+    valor_min_adicional DECIMAL(10, 2),
+    descripcion TEXT
+);
+-- Crear tabla Saldo_prepago
+CREATE TABLE Saldo_prepago (
+    id_saldo SERIAL PRIMARY KEY,
+    numero_abonado VARCHAR(20),
+    cant_saldo DECIMAL(10, 2)
+);
+
+-- Crear tabla Empresas
+CREATE TABLE Empresas (
+    id_empresa SERIAL PRIMARY KEY,
+    nombre VARCHAR(100),
+    ciudad VARCHAR(50)
+);
+
+-- Crear tabla Clientes
+CREATE TABLE Clientes (
+    id_cliente SERIAL PRIMARY KEY,
+    tipo_documento VARCHAR(20),
+    nombre VARCHAR(50),
+    apellido VARCHAR(50),
+    direccion VARCHAR(100),
+    fecha_nacimiento DATE,
+    sexo VARCHAR(10),
+    telefono VARCHAR(20),
+    ocupacion VARCHAR(50),
+    rango_salarial VARCHAR(50)
+);
+
+-- Crear tabla Contratos
+CREATE TABLE Contratos (
+    id_contrato SERIAL PRIMARY KEY,
+    id_plan INT,
+    id_cliente INT,
+    id_saldo INT,
+    id_empresa INT,
+	id_consumibles int,
+    duracion INT,
+	fecha_creacion date,
+	FOREIGN KEY (id_consumibles) references consumiblesxcontrato(id_consumibles), 
+    FOREIGN KEY (id_plan) REFERENCES planes (id_plan),
+    FOREIGN KEY (id_cliente) REFERENCES Clientes (id_cliente),
+    FOREIGN KEY (id_saldo) REFERENCES Saldo_prepago (id_saldo),
+    FOREIGN KEY (id_empresa) REFERENCES Empresas (id_empresa)
+);
+-- Crear tabla Facturacion
+CREATE TABLE Facturacion (
+    id_detalle SERIAL PRIMARY KEY,
+    num_factura INT,
+    id_contrato INT,
+    minutos_consumidos INT,
+    precio_unitario_minuto DECIMAL(10, 2),
+    consumo_plan DECIMAL(10, 2),
+    valor_pagar DECIMAL(10, 2),
+    impuestos DECIMAL(10, 2),
+    fecha_inicio DATE,
+    fecha_final DATE,
+    FOREIGN KEY (id_contrato) REFERENCES Contratos (id_contrato)
+);
+CREATE TABLE Recargas (
+    id_recargas SERIAL PRIMARY KEY,
+	id_contrato int references Contratos (id_contrato),
+    monto DECIMAL(10, 2),
+    fecha DATE
+);
+-- Crear tabla Llamadas
+CREATE TABLE Llamadas (
+    id_llamada SERIAL PRIMARY KEY,
+	id_contrato int REFERENCES contratos(id_contrato),
+    numero_abonado VARCHAR(20),
+    numero_tel_destino VARCHAR(20),
+    minutos_consumidos INT,
+    fecha DATE,
+    ciudad_del_abonado VARCHAR(50),
+    ciudad_destino VARCHAR(50),
+    operador_destino VARCHAR(50)
+);
+
+---------------------------------------------------------------
+
+--Insertar datos en la tabla tipo_plan
+insert into tipo_plan (nombre_plan) values ('Prepago'),('Postpago');
+
+-- Insertar datos en la tabla Clientes
+INSERT INTO Clientes (tipo_documento, nombre, apellido, direccion, fecha_nacimiento, sexo, telefono, ocupacion, rango_salarial)
+VALUES
+('CC', 'Juan', 'Pérez', 'Calle 123 #45-67', '1985-06-15', 'M', '3201234567', 'Ingeniero', '$2,000,000 - $3,000,000'),
+('TI', 'María', 'Gómez', 'Carrera 8 #12-34', '1990-08-25', 'F', '3109876543', 'Doctora', '$3,000,000 - $4,000,000'),
+('CC', 'Carlos', 'Rodríguez', 'Avenida Siempre Viva 742', '1975-01-30', 'M', '3012345678', 'Abogado', '$4,000,000 - $5,000,000'),
+('CE', 'Ana', 'Martínez', 'Transversal 4 #56-78', '1988-12-10', 'F', '3023456789', 'Contadora', '$2,500,000 - $3,500,000'),
+('CC', 'Pedro', 'Sánchez', 'Diagonal 3 #89-01', '1995-03-22', 'M', '3112233445', 'Profesor', '$1,500,000 - $2,500,000'),
+('TI', 'Lucía', 'Ramírez', 'Calle 10 #20-30', '2000-11-05', 'F', '3133344556', 'Estudiante', '$0 - $1,000,000'),
+('CC', 'Luis', 'Torres', 'Carrera 15 #44-55', '1982-07-18', 'M', '3209876543', 'Arquitecto', '$3,500,000 - $4,500,000'),
+('CE', 'Elena', 'Vargas', 'Avenida 68 #14-15', '1991-09-29', 'F', '3124455667', 'Diseñadora', '$2,000,000 - $3,000,000'),
+('CC', 'Fernando', 'López', 'Calle 22 #33-44', '1986-04-14', 'M', '3145566778', 'Médico', '$5,000,000 - $6,000,000'),
+('TI', 'Isabel', 'Díaz', 'Carrera 5 #67-89', '1999-02-17', 'F', '3156677889', 'Emprendedora', '$1,000,000 - $2,000,000'),
+('CC', 'Andrés', 'Gutiérrez', 'Avenida 9 #45-23', '1984-05-12', 'M', '3167788990', 'Consultor', '$3,000,000 - $4,000,000'),
+('TI', 'Sofía', 'Morales', 'Calle 15 #6-10', '2001-08-30', 'F', '3178899001', 'Desarrolladora', '$1,500,000 - $2,500,000');
+
+--Insertar datos en la tabla
+Insert into empresas(nombre,ciudad)
+values ('claro','buenaventura'),('movistar', 'cartagena'),('tigo','cali'),('wom','cali')
+
+-- Insertar datos en la tabla planes
+INSERT INTO planes (id_tipoplan, nombre_plan, minutos, gigas, mensajes, precio_plan_postpago,precio_plan_prepago, valor_min_adicional, descripcion)
+VALUES
+-- Planes prepago
+(1, 'Plan Prepago Diario', 100, 1, 50, NULL,1200, 100, 'Plan prepago diario con 100 minutos, 2GB y 50 mensajes'),
+(1, 'Plan Prepago Semanal', 300, 3, 100, NULL,7200, 100, 'Plan prepago semanal con 300 minutos, 4GB y 100 mensajes'),
+(1, 'Plan Prepago Quincenal', 600, 5, 200, NULL,15000, 100, 'Plan prepago quincenal con 600 minutos, 6GB y 200 mensajes'),
+(1, 'Plan Prepago Mensual', 1200, 10, 500, NULL,33000, 100, 'Plan prepago mensual con 1200 minutos, 16GB y 500 mensajes'),
+-- Planes pospago
+(2, 'Plan Pospago Estándar', 500, 5, 200, 50000.00,null, 100, 'Plan pospago estándar con 500 minutos, 5GB y 200 mensajes'),
+(2, 'Plan Pospago Premium', 1000, 10, 500, 80000.00,null, 100, 'Plan pospago premium con 1000 minutos, 10GB y 500 mensajes'),
+(2, 'Plan Pospago Ilimitado', NULL, 20, NULL, 120000.00,null, 100, 'Plan pospago con datos ilimitados y 20GB para compartir'),
+(2, 'Plan Pospago Familiar', 2000, 15, 1000, 150000.00,null, 100, 'Plan pospago familiar con 2000 minutos, 15GB y 1000 mensajes'),
+(2, 'Plan Pospago Empresarial', 3000, 30, 1500, 200000.00,null, 100, 'Plan pospago empresarial con 3000 minutos, 30GB y 1500 mensajes'),
+(2, 'Plan Pospago VIP', 5000, 50, 2000, 250000.00,null, 100, 'Plan pospago VIP con 5000 minutos, 50GB y 2000 mensajes');
+
+--Insertar datos en la tabla contratos
+INSERT INTO contratos (id_plan,id_cliente,id_saldo,id_empresa,duracion,fecha_creacion)
+Values (1,1,1,1,1,CURRENT_DATE);
+
+--Insertar datos en la tabla recargas
+insert into recargas (id_contrato,monto,fecha)
+values (1,1000,CURRENT_DATE);
+
+--Insertar datos en la tabla llamadas
+insert into llamadas (id_contrato,numero_abonado,numero_tel_destino,minutos_consumidos,fecha,ciudad_del_abonado,ciudad_destino,operador_destino)
+values (1,3109876543,312275123,90,CURRENT_DATE,'cali','cali','Tigo');
+
+--------------------------------
+CREATE OR REPLACE FUNCTION consumir_saldo_llamada()
+RETURNS TRIGGER AS $$
+DECLARE
+    v_plan_id INT;
+    v_minutos_restantes INT;
+    v_minutos_a_consumir INT;
+    v_saldo_restante DECIMAL(10, 2);
+    v_valor_min_adicional DECIMAL(10, 2);
+BEGIN
+    -- Obtener el ID del plan del contrato
+    SELECT id_plan INTO v_plan_id
+    FROM Contratos
+    WHERE id_contrato = NEW.id_contrato;
+
+    -- Obtener los minutos restantes y el valor adicional por minuto del plan
+    SELECT minutos, valor_min_adicional INTO v_minutos_restantes, v_valor_min_adicional
+    FROM consumiblesxcontrato
+    WHERE id_consumibles = (
+        SELECT id_consumibles
+        FROM Contratos
+        WHERE id_contrato = NEW.id_contrato
+    );
+
+    -- Determinar si el cliente tiene minutos en el plan
+    IF v_minutos_restantes >= NEW.minutos_consumidos THEN
+        -- Consumir minutos del plan
+        UPDATE consumiblesxcontrato
+        SET minutos = minutos - NEW.minutos_consumidos
+        WHERE id_consumibles = (
+            SELECT id_consumibles
+            FROM Contratos
+            WHERE id_contrato = NEW.id_contrato
+        );
+    ELSE
+        -- Consumir los minutos restantes del plan
+        v_minutos_a_consumir := NEW.minutos_consumidos - v_minutos_restantes;
+        UPDATE consumiblesxcontrato
+        SET minutos = 0
+        WHERE id_consumibles = (
+            SELECT id_consumibles
+            FROM Contratos
+            WHERE id_contrato = NEW.id_contrato
+        );
+
+        -- Consumir el saldo restante del cliente
+        SELECT cant_saldo INTO v_saldo_restante
+        FROM Saldo_prepago
+        WHERE numero_abonado = (
+            SELECT telefono
+            FROM Clientes
+            WHERE id_cliente = (
+                SELECT id_cliente
+                FROM Contratos
+                WHERE id_contrato = NEW.id_contrato
+            )
+        );
+
+        IF v_saldo_restante >= (v_minutos_a_consumir * v_valor_min_adicional) THEN
+            UPDATE Saldo_prepago
+            SET cant_saldo = cant_saldo - (v_minutos_a_consumir * v_valor_min_adicional)
+            WHERE numero_abonado = (
+                SELECT telefono
+                FROM Clientes
+                WHERE id_cliente = (
+                    SELECT id_cliente
+                    FROM Contratos
+                    WHERE id_contrato = NEW.id_contrato
+                )
+            );
+        ELSE
+            RAISE EXCEPTION 'Saldo insuficiente para realizar la llamada';
+        END IF;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_consumir_saldo_llamada
+AFTER INSERT ON Llamadas
+FOR EACH ROW
+EXECUTE FUNCTION consumir_saldo_llamada();
+
+-----------------------------------------
+CREATE OR REPLACE FUNCTION actualizar_idconsumible_contrato()
+RETURNS TRIGGER AS $$
+BEGIN
+	UPDATE contratos
+	SET id_consumibles = NEW.id_consumibles;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_actualizar_idrecargas_contrato
+AFTER INSERT ON Consumiblesxcontrato
+FOR EACH ROW
+EXECUTE FUNCTION actualizar_idconsumible_contrato();
+
+----------------------------------------------------
+CREATE OR REPLACE FUNCTION asignar_saldo_inicial()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO Saldo_prepago (numero_abonado, cant_saldo)
+    VALUES (NEW.telefono, 0);
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_asignar_saldo_inicial
+AFTER INSERT ON Clientes
+FOR EACH ROW
+EXECUTE FUNCTION asignar_saldo_inicial();
+
+--------------------------------------------
+CREATE OR REPLACE FUNCTION actualizar_saldo_recarga()
+RETURNS TRIGGER AS $$
+BEGIN
+    UPDATE Saldo_prepago
+    SET cant_saldo = cant_saldo + NEW.monto
+    WHERE numero_abonado = (
+        SELECT telefono
+        FROM Clientes
+        WHERE id_cliente = (
+            SELECT id_cliente
+            FROM Contratos
+            WHERE id_contrato = NEW.id_contrato
+        )
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_actualizar_saldo_recarga
+AFTER INSERT ON Recargas
+FOR EACH ROW
+EXECUTE FUNCTION actualizar_saldo_recarga();
+----------------------------------------------
+CREATE OR REPLACE FUNCTION consumibles()
+RETURNS TRIGGER AS $$
+BEGIN
+	INSERT INTO consumiblesxcontrato (nombre_plan, minutos, gigas, mensajes, precio_plan_postpago, valor_min_adicional, descripcion, precio_plan_prepago)
+	SELECT p.nombre_plan, p.minutos, p.gigas, p.mensajes, p.precio_plan_postpago, p.valor_min_adicional, p.descripcion, p.precio_plan_prepago
+	FROM planes p
+	WHERE p.id_plan = NEW.id_plan;
+	RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER trigger_consumibles
+AFTER INSERT ON contratos
+FOR EACH ROW
+EXECUTE FUNCTION consumibles();
